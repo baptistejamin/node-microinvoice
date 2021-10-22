@@ -119,4 +119,6 @@ let myInvoice = new MicroInvoice({
 // Render invoice as PDF
 myInvoice.generate("example.pdf").then(() => {
   console.log("Invoice saved");
+}).catch((error) => {
+  console.error(error);
 });

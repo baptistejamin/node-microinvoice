@@ -38,17 +38,15 @@ Alternatively, you can run `npm install microinvoice --save`.
 
 ## How to use?
 
-This module may be used to acquire the billable VAT percentage for a given customer. You may also use it directly to process the total amount including VAT you should bill; and even to validate a customer's VAT number.
-
-**:red_circle: Important: in order to fetch the sales tax for a customer, you need to know their country (and sometimes state). The country (sometimes state) must be passed to all module methods, formatted as ISO ALPHA-2 (eg. France is FR, United States is US).**
-
-### :arrow_right: Import the module
-
 Import the module in your code:
 
 `var MicroInvoice = require("microinvoice");`
 
 ```javascript
+
+let myInvoice = new MicroInvoice({
+  // Use example from examples/index.js
+});
 // Render invoice as PDF
 myInvoice.generate("example.pdf").then(() => {
   console.log("Invoice saved");
