@@ -67,7 +67,7 @@ let myInvoice = new MicroInvoice({
         color  : "primary"
       }, {
         value  : "sed do eiusmod tempor incididunt ut labore et dolore magna.",
-        weight : "regular",
+        weight : "bold",
         color  : "secondary"
       }],
 
