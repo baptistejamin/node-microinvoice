@@ -9,7 +9,7 @@ Fast & elegant PDF invoice generator for Node using PDFKit.
 - It builds invoices that **looks good**
 - Generates a PDF in **less than 30ms**
 - Custom Styling & Text
-- Covers exterded charsets like Russian, Polish (native PDF fonts only supports Latin)
+- Covers extended charsets like Russian, Polish (native PDF fonts only supports Latin)
 - Transliterate to Latin when charset is not supported (Chinese, Arabic)
 
 * How invoices looks like ?
