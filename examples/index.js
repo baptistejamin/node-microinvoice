@@ -15,7 +15,7 @@ let myInvoice = new MicroInvoice({
   },
   data : {
     invoice : {
-      name : "Invoice for Nike",
+      name : "Invoice",
 
       header : [{
         label : "Invoice Number",
