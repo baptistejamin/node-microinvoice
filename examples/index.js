@@ -28,6 +28,8 @@ let myInvoice = new MicroInvoice({
         value : "22/10/21"
       }],
 
+      currency : "EUR",
+
       customer : [{
         label : "Bill To",
         value : [
@@ -86,7 +88,8 @@ let myInvoice = new MicroInvoice({
           }, {
             value : 1
           }, {
-            value : "53"
+            value : "53",
+            price : true
           }],
 
           [{
@@ -94,22 +97,26 @@ let myInvoice = new MicroInvoice({
           }, {
             value : 1
           }, {
-            value : "-10"
+            value : "-10",
+            price : true
           }]
         ],
 
         total : [{
-          label : "Total without VAT (EUR)",
-          value : "43"
+          label : "Total without VAT",
+          value : "43",
+          price : true
         }, {
           label : "VAT Rate",
           value : "20%"
         }, {
-          label : "VAT Paid (EUR)",
-          value : "8.6"
+          label : "VAT Paid",
+          value : "8.6",
+          price : true
         }, {
-          label : "Total paid with VAT (EUR)",
-          value : "51.6"
+          label : "Total paid with VAT",
+          value : "51.6",
+          price : true
         }]
       }
     }
