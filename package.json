@@ -1,6 +1,6 @@
 {
   "name": "microinvoice",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Fast & elegant PDF invoice generator for Node using PDFKit. No Puppeteer",
   "homepage": "https://github.com/baptistejamin/node-microinvoice",
   "main": "lib/index.js",
@@ -32,7 +32,6 @@
     "pdfkit"
   ],
   "dependencies": {
-    "get-stream": "6.0.1",
     "lodash.merge": "4.6.2",
     "pdfkit": "0.12.3",
     "transliteration": "2.2.0"
