@@ -26,7 +26,7 @@ As everyday, our customers were asking for PDF invoices as some accounting softw
 
 <table>
 <tr>
-<td align="center"><a href="https://crisp.chat/"><img src="https://crisp.chat/favicon.png" width="64" /></a></td>
+<td align="center"><a href="https://crisp.chat/"><img src="https://crisp.chat/favicon-256x256.png" width="64" /></a></td>
 </tr>
 <tr>
 <td align="center">Crisp</td>
