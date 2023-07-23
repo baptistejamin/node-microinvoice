@@ -1,8 +1,8 @@
 {
   "name": "microinvoice",
   "version": "1.0.6",
-  "description": "Fast & elegant PDF invoice generator for Node using PDFKit. No Puppeteer",
-  "homepage": "https://github.com/baptistejamin/node-microinvoice",
+  "description": "Fast & elegant PDF invoice generator for Node using PDFKit. No Puppeteer. Based on node-microinvoice by @baptistejamin.",
+  "homepage": "https://github.com/twosdai/node-microinvoice",
   "main": "lib/index.js",
   "directories": {
     "lib": "lib"
@@ -10,10 +10,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git://github.com/baptistejamin/node-microinvoice.git"
+    "url": "git://github.com/twosdai/node-microinvoice.git"
   },
   "bugs": {
-    "url": "https://github.com/baptistejamin/node-microinvoice/issues"
+    "url": "https://github.com/twosdai/node-microinvoice/issues"
   },
   "engines": {
     "node": ">= 6.4.0"
@@ -22,9 +22,8 @@
     "test": "check-build"
   },
   "author": {
-    "name": "Baptiste Jamin",
-    "email": "baptiste@crisp.chat",
-    "url": "https://crisp.chat/"
+    "name": "Daniel Wasserlauf",
+    "email": "daniel.wasserlauf@gmail.com"
   },
   "keywords": [
     "invoice",
