@@ -10,10 +10,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git://github.com/twosdai/node-microinvoice.git"
+    "url": "git://github.com/paigo-tech/node-microinvoice.git"
   },
   "bugs": {
-    "url": "https://github.com/twosdai/node-microinvoice/issues"
+    "url": "https://github.com/paigo-tech/node-microinvoice/issues"
   },
   "engines": {
     "node": ">= 6.4.0"
