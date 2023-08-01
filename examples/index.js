@@ -28,7 +28,7 @@ let myInvoice = new MicroInvoice({
         value : "22/10/21"
       }],
 
-      currency : "EUR",
+      currency : "€",
 
       customer : [{
         label : "Bill To",
