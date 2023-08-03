@@ -84,7 +84,7 @@ let myInvoice = new MicroInvoice({
 
         parts : [
           [{
-            value : "Nike Air Max"
+            value : "Nike Air Max Lorem ipsum dolor sit amet, consectetur adipiscing elit Lorem ipsum dolor sit amet, consectetur adipiscing elit Lorem ipsum dolor sit amet, consectetur adipiscing elit"
           }, {
             value : 1
           }, {
@@ -124,7 +124,7 @@ let myInvoice = new MicroInvoice({
 });
 
 // Render invoice as PDF
-myInvoice.generate("example.pdf").then(() => {
+myInvoice.generate("examples/example.pdf").then(() => {
   console.log("Invoice saved");
 }).catch((error) => {
   console.error(error);
