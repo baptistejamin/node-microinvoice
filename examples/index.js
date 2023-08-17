@@ -78,8 +78,6 @@ let myInvoice = new MicroInvoice({
           value : "Description"
         }, {
           value : "Quantity"
-        }, {
-          value : "Subtotal"
         }],
 
         parts : [
@@ -102,22 +100,7 @@ let myInvoice = new MicroInvoice({
           }]
         ],
 
-        total : [{
-          label : "Total without VAT",
-          value : "43",
-          price : true
-        }, {
-          label : "VAT Rate",
-          value : "20%"
-        }, {
-          label : "VAT Paid",
-          value : "8.6",
-          price : true
-        }, {
-          label : "Total paid with VAT",
-          value : "51.6",
-          price : true
-        }]
+        total : []
       }
     }
   }
