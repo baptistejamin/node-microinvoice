@@ -22,7 +22,7 @@ let myInvoice = new MicroInvoice({
         value : 1
       }, {
         label : "Status",
-        value : "Paid"
+        value : "Paid afsdf  asfdasd  asf asdf as asdfasdf asd asd fasf"
       }, {
         label : "Date",
         value : "22/10/21"
