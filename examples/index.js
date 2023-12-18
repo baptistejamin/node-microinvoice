@@ -22,7 +22,7 @@ let myInvoice = new MicroInvoice({
         value : 1
       }, {
         label : "Status",
-        value : "Paid"
+        value : "Paid afsdf  asfdasd  asf asdf as asdfasdf asd asd fasf"
       }, {
         label : "Date",
         value : "22/10/21"
@@ -78,13 +78,11 @@ let myInvoice = new MicroInvoice({
           value : "Description"
         }, {
           value : "Quantity"
-        }, {
-          value : "Subtotal"
         }],
 
         parts : [
           [{
-            value : "Nike Air Max"
+            value : "Nike Air Max Lorem ipsum dolor sit amet, consectetur adipiscing elit Lorem ipsum dolor sit amet, consectetur adipiscing elit Lorem ipsum dolor sit amet, consectetur adipiscing elit"
           }, {
             value : 1
           }, {
@@ -102,29 +100,14 @@ let myInvoice = new MicroInvoice({
           }]
         ],
 
-        total : [{
-          label : "Total without VAT",
-          value : "43",
-          price : true
-        }, {
-          label : "VAT Rate",
-          value : "20%"
-        }, {
-          label : "VAT Paid",
-          value : "8.6",
-          price : true
-        }, {
-          label : "Total paid with VAT",
-          value : "51.6",
-          price : true
-        }]
+        total : []
       }
     }
   }
 });
 
 // Render invoice as PDF
-myInvoice.generate("example.pdf").then(() => {
+myInvoice.generate("examples/example.pdf").then(() => {
   console.log("Invoice saved");
 }).catch((error) => {
   console.error(error);
