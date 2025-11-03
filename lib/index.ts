@@ -114,7 +114,7 @@ interface MicroinvoiceOptions {
       customer: MicroinvoicePart[];
       seller: MicroinvoicePart[];
       details: {
-        header: MicroinvoicePart[];
+        header?: MicroinvoicePart[];
         parts?: MicroinvoicePart[][];
         total?: MicroinvoicePart[];
       };
