@@ -4,23 +4,23 @@
 
 Fast & elegant PDF invoice generator for Node using PDFKit.
 
-* What Microinvoice does?
+## What Microinvoice does?
 
-- It builds invoices that **looks good**
+- It builds invoices that **look good**
 - Generates a PDF in **less than 30ms**
 - Custom Styling & Text
-- Covers extended charsets like Russian, Polish (native PDF fonts only supports Latin)
+- Covers extended charsets like Russian, Polish (native PDF fonts only support Latin)
 - Transliterate to Latin when charset is not supported (Chinese, Arabic)
 
-* How invoices looks like ?
+* What do invoices look like?
 
 ![Example](/examples/example.png?raw=true "Invoice generated using Microinvoice")
 
 ## Why another invoice generator
 
-This project was made for our own company [Crisp](https:/crisp.chat/). We are generating everymonth thousands of HTML invoices. Given this scale, using Puppeteer for generating HTML to PDF would be very inefficient.
+This project was made for our own company [Crisp](https:/crisp.chat/). We generate thousands of HTML invoices every month. Given this scale, using Puppeteer for generating HTML to PDF would be very inefficient.
 
-As everyday, our customers were asking for PDF invoices as some accounting softwares automatically fetch invoices from emails. I could really understand their frustration. At the end, why generating PDF should be easy?
+This library provides an elegant and minimal way to generate invoices 
 
 ## Who uses it?
 
