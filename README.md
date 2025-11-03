@@ -20,13 +20,13 @@ Fast & elegant PDF invoice generator for Node using PDFKit.
 
 This project was made for our own company [Crisp](https:/crisp.chat/). We generate thousands of HTML invoices every month. Given this scale, using Puppeteer for generating HTML to PDF would be very inefficient.
 
-This library provides an elegant and minimal way to generate invoices 
+This library offers a elegant and minimal approach to generating invoices. 
 
 ## Who uses it?
 
 <table>
 <tr>
-<td align="center"><a href="https://crisp.chat/"><img src="https://crisp.chat/favicon-256x256.png" width="64" /></a></td>
+<td align="center"><a href="https://crisp.chat/"><img src="https://crisp.chat/favicons/favicon-256x256.png" width="64" /></a></td>
 </tr>
 <tr>
 <td align="center">Crisp</td>
