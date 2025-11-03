@@ -45,16 +45,15 @@ Alternatively, you can run `npm install microinvoice --save`.
 
 Import the module in your code:
 
-`var MicroInvoice = require("microinvoice");`
-
-```javascript
+```typescript
+import MicroInvoice from "microinvoice";
 
 let myInvoice = new MicroInvoice({
-  // Use example from examples/index.js
+  // Use example from examples/index.ts
 });
+
 // Render invoice as PDF
 myInvoice.generate("example.pdf").then(() => {
   console.log("Invoice saved");
 });
-
 ```

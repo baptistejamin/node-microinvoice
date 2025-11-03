@@ -1,9 +1,11 @@
 {
   "name": "microinvoice",
-  "version": "1.0.6",
+  "version": "2.0.0",
   "description": "Fast & elegant PDF invoice generator for Node using PDFKit. No Puppeteer",
   "homepage": "https://github.com/baptistejamin/node-microinvoice",
-  "main": "lib/index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
   "directories": {
     "lib": "lib"
   },
@@ -19,7 +21,10 @@
     "node": ">= 6.4.0"
   },
   "scripts": {
-    "test": "check-build"
+    "build": "tsc",
+    "test": "eslint .",
+    "example": "tsx examples/index.ts",
+    "prepublishOnly": "npm run build"
   },
   "author": {
     "name": "Baptiste Jamin",
@@ -37,6 +42,14 @@
     "transliteration": "2.2.0"
   },
   "devDependencies": {
-    "check-build": "2.8.2"
+    "@types/lodash.merge": "^4.6.7",
+    "@types/node": "20.10.0",
+    "@types/pdfkit": "0.12.12",
+    "@typescript-eslint/eslint-plugin": "8.39.1",
+    "typescript": "5.9.3",
+    "eslint": "9.29.0",
+    "eslint-plugin-crisp": "1.1.13",
+    "eslint-plugin-jsdoc": "54.1.0",
+    "tsx": "^4.19.2"
   }
 }
