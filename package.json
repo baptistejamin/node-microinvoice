@@ -1,6 +1,6 @@
 {
   "name": "microinvoice",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Fast & elegant PDF invoice generator for Node using PDFKit. No Puppeteer",
   "homepage": "https://github.com/baptistejamin/node-microinvoice",
   "main": "dist/index.js",

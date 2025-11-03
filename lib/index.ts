@@ -440,6 +440,10 @@ export default class Microinvoice {
     });
 
     this.options.data.invoice.header.forEach((line) => {
+      if (!line.value) {
+        return;
+      }
+
       this.setText(`${line.label}:`, {
         fontWeight: "bold",
         color: this.options.style.header.regularColor,
@@ -455,6 +459,10 @@ export default class Microinvoice {
       }
 
       _values.forEach((value) => {
+        if (!value) {
+          return;
+        }
+
         this.setText(value, {
           colorCode: "secondary",
           color: this.options.style.header.secondaryColor,
@@ -650,6 +658,10 @@ export default class Microinvoice {
     this.storage.cursor.y += 60;
 
     this.options.data.invoice.legal?.forEach((legal) => {
+      if (!legal.value) {
+        return;
+      }
+
       this.setCursor("x", this.options.style.document.marginLeft * 2);
 
       this.setText(String(legal.value), {
