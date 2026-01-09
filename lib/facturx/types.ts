@@ -57,6 +57,74 @@ export interface FacturXAddress {
 }
 
 /**
+ * Legal registration identifier schemes (ISO 6523 ICA codes)
+ * All EU member states + international schemes
+ */
+export type FacturXLegalIdScheme =
+  // Austria
+  | "firmenbuch" | "uid_at"
+  // Belgium
+  | "bce" | "kbo"
+  // Bulgaria
+  | "bulstat"
+  // Croatia
+  | "oib" | "mbs"
+  // Cyprus
+  | "cyprus_reg"
+  // Czech Republic
+  | "ico"
+  // Denmark
+  | "cvr"
+  // Estonia
+  | "ariregister"
+  // Finland
+  | "ytunnus" | "ovt"
+  // France
+  | "siret" | "siren"
+  // Germany
+  | "handelsregister" | "ust_id_nr"
+  // Greece
+  | "gemi"
+  // Hungary
+  | "cegjegyzek"
+  // Ireland
+  | "cro"
+  // Italy
+  | "rea" | "codice_fiscale"
+  // Latvia
+  | "ur_lv"
+  // Lithuania
+  | "rc_lt"
+  // Luxembourg
+  | "rcs_lu"
+  // Malta
+  | "mfsa"
+  // Netherlands
+  | "kvk"
+  // Poland
+  | "krs" | "regon" | "nip"
+  // Portugal
+  | "nipc"
+  // Romania
+  | "cui"
+  // Slovakia
+  | "ico_sk"
+  // Slovenia
+  | "maticna"
+  // Spain
+  | "nif"
+  // Sweden
+  | "orgnr"
+  // UK
+  | "companies_house"
+  // Switzerland
+  | "uid_ch"
+  // Norway
+  | "orgnr_no"
+  // International
+  | "eori" | "gln" | "duns" | "lei" | "vat";
+
+/**
  * Party information (seller or buyer)
  */
 export interface FacturXParty {
@@ -66,8 +134,14 @@ export interface FacturXParty {
   address: FacturXAddress;
   /** VAT identification number (e.g., "FR12345678901") */
   vatId?: string;
-  /** French SIRET number (14 digits) */
-  siret?: string;
+  /**
+   * Legal registration identifier (company registration number)
+   * Examples: SIRET (FR), Handelsregisternummer (DE), KVK (NL), etc.
+   */
+  legalId?: {
+    value: string;
+    scheme: FacturXLegalIdScheme;
+  };
   /** Email address */
   email?: string;
   /** Phone number */

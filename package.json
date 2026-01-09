@@ -41,7 +41,8 @@
     "pdf-lib": "^1.17.1",
     "pdfkit": "0.12.3",
     "transliteration": "2.2.0",
-    "xmlbuilder2": "^4.0.3"
+    "xmlbuilder2": "^4.0.3",
+    "zod": "^4.3.5"
   },
   "devDependencies": {
     "@types/lodash.merge": "^4.6.7",

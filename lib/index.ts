@@ -20,11 +20,85 @@ import { transliterate } from "transliteration";
 import type PDFKit from "pdfkit";
 
 // PROJECT: LIB
-import { generateFacturXML, embedFacturX } from "./facturx/index.js";
+import {
+  generateFacturXML,
+  embedFacturX,
+  calculateTotals,
+  formatPartyAddress,
+  validateInvoice,
+  safeValidateInvoice
+} from "./facturx/index.js";
 import type { FacturXOptions } from "./facturx/types.js";
+import type { InvoiceData, InvoiceDataInput } from "./facturx/schema.js";
 
-// Re-export Factur-X types for external use
-export * from "./facturx/types.js";
+// Re-export Factur-X schema (preferred unified API)
+export {
+  // Schemas
+  AddressSchema,
+  PartySchema,
+  LineItemSchema,
+  PaymentSchema,
+  InvoiceMetaSchema,
+  LegalNoticeSchema,
+  InvoiceDataSchema,
+
+  // Output types (with official codes)
+  type Address,
+  type Party,
+  type LineItem,
+  type Payment,
+  type InvoiceMeta,
+  type LegalNotice,
+  type InvoiceData,
+  type InvoiceTotals,
+  type UnitCode,
+
+  // Input types (with friendly names)
+  type VATCategoryInput,
+  type InvoiceTypeInput,
+  type PaymentMeansInput,
+  type UnitCodeInput,
+  type LineItemInput,
+  type InvoiceDataInput,
+
+  // Helpers
+  validateInvoice,
+  safeValidateInvoice,
+  formatPartyAddress,
+
+  // Constants with friendly names
+  VAT_CATEGORIES,
+  INVOICE_TYPES,
+  PAYMENT_MEANS,
+  UNIT_CODES,
+  LEGAL_ID_SCHEMES,
+  type LegalIdScheme,
+
+  // Labels for display
+  VAT_CATEGORY_LABELS,
+  INVOICE_TYPE_LABELS,
+  PAYMENT_MEANS_LABELS,
+  UNIT_CODE_LABELS,
+
+  // Legacy constant names
+  VAT_CATEGORY_CODES,
+  INVOICE_TYPE_CODES,
+  PAYMENT_MEANS_CODES
+} from "./facturx/schema.js";
+
+// Re-export legacy types (for backward compatibility)
+export type {
+  VATCategoryCode,
+  InvoiceTypeCode,
+  PaymentMeansCode,
+  FacturXAddress,
+  FacturXParty,
+  FacturXLineItem,
+  FacturXPayment,
+  FacturXInvoice,
+  FacturXOptions,
+  FacturXTotals
+} from "./facturx/types.js";
 
 // Get __dirname equivalent for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -114,6 +188,10 @@ interface MicroinvoiceOptions {
     };
   };
 
+  /**
+   * Legacy data format for visual PDF generation.
+   * Prefer using `invoiceData` for unified configuration with Zod validation.
+   */
   data?: {
     invoice: {
       name: string;
@@ -130,8 +208,18 @@ interface MicroinvoiceOptions {
     };
   };
 
-  /** Factur-X EN16931 configuration for e-invoicing compliance */
+  /**
+   * Legacy Factur-X configuration (used with `data`).
+   * Prefer using `invoiceData` for unified configuration.
+   */
   facturx?: FacturXOptions;
+
+  /**
+   * Unified invoice data with Zod validation.
+   * Single source of truth for both visual PDF and Factur-X XML generation.
+   * When provided, this takes precedence over `data` and `facturx`.
+   */
+  invoiceData?: InvoiceDataInput;
 }
 
 interface MicroinvoiceStorage {
@@ -257,6 +345,17 @@ export default class Microinvoice {
       }
     };
 
+    // If unified invoiceData is provided, convert it to internal format
+    if (options?.invoiceData) {
+      const converted = this.convertInvoiceData(options.invoiceData);
+
+      options = {
+        ...options,
+        data: converted.data,
+        facturx: converted.facturx
+      };
+    }
+
     this.options = _merge(this.defaultOptions, options);
 
     this.storage = {
@@ -280,6 +379,212 @@ export default class Microinvoice {
       },
       document: null
     };
+  }
+
+  /**
+   * Convert unified InvoiceDataInput to internal format
+   * Validates and transforms the input using Zod schema
+   */
+  private convertInvoiceData(input: InvoiceDataInput): {
+    data: MicroinvoiceOptions["data"];
+    facturx?: FacturXOptions;
+  } {
+    // Parse and validate input, applying defaults and transformations
+    const invoiceData = validateInvoice(input);
+    const totals = calculateTotals(invoiceData.lineItems);
+
+    // Format date for display
+    const formatDisplayDate = (date: Date): string => {
+      return date.toLocaleDateString("en-US", {
+        weekday: "short",
+        year: "numeric",
+        month: "short",
+        day: "2-digit"
+      });
+    };
+
+    // Build header info
+    const header: MicroinvoicePart[] = [
+      { label: "Invoice Number", value: invoiceData.invoice.number },
+      { label: "Date", value: formatDisplayDate(invoiceData.invoice.issueDate) }
+    ];
+
+    if (invoiceData.invoice.dueDate) {
+      header.push({
+        label: "Due Date",
+        value: formatDisplayDate(invoiceData.invoice.dueDate)
+      });
+    }
+
+    // Build customer (buyer) info
+    const customer: MicroinvoicePart[] = [
+      {
+        label: "Bill To",
+        value: formatPartyAddress(invoiceData.buyer)
+      }
+    ];
+
+    if (invoiceData.buyer.vatId) {
+      customer.push({ label: "Tax Identifier", value: invoiceData.buyer.vatId });
+    }
+
+    // Build seller info
+    const seller: MicroinvoicePart[] = [
+      {
+        label: "Bill From",
+        value: formatPartyAddress(invoiceData.seller)
+      }
+    ];
+
+    if (invoiceData.seller.vatId) {
+      seller.push({ label: "Tax Identifier", value: invoiceData.seller.vatId });
+    }
+
+    if (invoiceData.seller.legalId) {
+      const schemeLabels: Record<string, string> = {
+        // Austria
+        firmenbuch: "Firmenbuch",
+        uid_at: "UID",
+        // Belgium
+        bce: "BCE/KBO",
+        kbo: "BCE/KBO",
+        // Bulgaria
+        bulstat: "BULSTAT",
+        // Croatia
+        oib: "OIB",
+        mbs: "MBS",
+        // Cyprus
+        cyprus_reg: "Reg. No.",
+        // Czech Republic
+        ico: "IČO",
+        // Denmark
+        cvr: "CVR",
+        // Estonia
+        ariregister: "Äriregister",
+        // Finland
+        ytunnus: "Y-tunnus",
+        ovt: "OVT",
+        // France
+        siret: "SIRET",
+        siren: "SIREN",
+        // Germany
+        handelsregister: "Handelsregister",
+        ust_id_nr: "USt-IdNr",
+        // Greece
+        gemi: "GEMI",
+        // Hungary
+        cegjegyzek: "Cégjegyzék",
+        // Ireland
+        cro: "CRO",
+        // Italy
+        rea: "REA",
+        codice_fiscale: "Codice Fiscale",
+        // Latvia
+        ur_lv: "Reg. Nr.",
+        // Lithuania
+        rc_lt: "Juridinio kodas",
+        // Luxembourg
+        rcs_lu: "RCS",
+        // Malta
+        mfsa: "MFSA",
+        // Netherlands
+        kvk: "KVK",
+        // Poland
+        krs: "KRS",
+        regon: "REGON",
+        nip: "NIP",
+        // Portugal
+        nipc: "NIPC",
+        // Romania
+        cui: "CUI",
+        // Slovakia
+        ico_sk: "IČO",
+        // Slovenia
+        maticna: "Matična št.",
+        // Spain
+        nif: "NIF",
+        // Sweden
+        orgnr: "Org.nr",
+        // UK
+        companies_house: "Companies House",
+        // Switzerland
+        uid_ch: "UID",
+        // Norway
+        orgnr_no: "Org.nr",
+        // International
+        eori: "EORI",
+        gln: "GLN",
+        duns: "D-U-N-S",
+        lei: "LEI",
+        vat: "VAT"
+      };
+
+      const label = schemeLabels[invoiceData.seller.legalId.scheme] || "Company ID";
+
+      seller.push({ label, value: invoiceData.seller.legalId.value });
+    }
+
+    // Build line items
+    const parts: MicroinvoicePart[][] = invoiceData.lineItems.map((item) => [
+      { value: item.description },
+      { value: item.quantity },
+      { value: item.quantity * item.unitPrice, price: true }
+    ]);
+
+    // Build totals
+    const total: MicroinvoicePart[] = [
+      { label: "Total without VAT", value: totals.netAmount, price: true }
+    ];
+
+    // Add VAT breakdown
+    for (const vat of totals.vatBreakdown) {
+      total.push({ label: `VAT ${vat.rate}%`, value: vat.vatAmount, price: true });
+    }
+
+    total.push({ label: "Total with VAT", value: totals.grossAmount, price: true });
+
+    // Build legal notices
+    const legal: MicroinvoicePart[] = (invoiceData.legal || []).map((notice) => ({
+      value: notice.text,
+      weight: notice.weight,
+      color: "secondary"
+    }));
+
+    const data: MicroinvoiceOptions["data"] = {
+      invoice: {
+        name: invoiceData.title,
+        header,
+        customer,
+        seller,
+        details: {
+          header: [
+            { value: "Description" },
+            { value: "Quantity" },
+            { value: "Subtotal" }
+          ],
+          parts,
+          total
+        },
+        legal,
+        currency: invoiceData.invoice.currencyCode
+      }
+    };
+
+    // Build Factur-X options if enabled
+    let facturx: FacturXOptions | undefined;
+
+    if (invoiceData.facturx) {
+      facturx = {
+        enabled: true,
+        seller: invoiceData.seller,
+        buyer: invoiceData.buyer,
+        invoice: invoiceData.invoice,
+        lineItems: invoiceData.lineItems as FacturXOptions["lineItems"],
+        payment: invoiceData.payment as FacturXOptions["payment"]
+      };
+    }
+
+    return { data, facturx };
   }
 
   /**
@@ -351,8 +656,33 @@ export default class Microinvoice {
     // Generate PDF to buffer first
     const pdfBuffer = await this.generateToBuffer();
 
-    // Generate CII XML from Factur-X options
-    const xmlContent = generateFacturXML(this.options.facturx!);
+    // Generate CII XML - use unified invoiceData if available, otherwise legacy facturx
+    let xmlContent: string;
+
+    if (this.options.invoiceData) {
+      // Parse and validate input before generating XML
+      const validatedData = validateInvoice(this.options.invoiceData);
+
+      xmlContent = generateFacturXML(validatedData);
+    } else {
+      // Convert legacy FacturXOptions to InvoiceData format
+      const facturxInvoice = this.options.facturx!.invoice;
+
+      const legacyData: InvoiceData = {
+        title: this.options.data?.invoice?.name || "Invoice",
+        invoice: {
+          ...facturxInvoice,
+          typeCode: (facturxInvoice.typeCode || "380") as InvoiceData["invoice"]["typeCode"]
+        },
+        seller: this.options.facturx!.seller,
+        buyer: this.options.facturx!.buyer,
+        lineItems: this.options.facturx!.lineItems as InvoiceData["lineItems"],
+        payment: this.options.facturx!.payment as InvoiceData["payment"],
+        facturx: true
+      };
+
+      xmlContent = generateFacturXML(legacyData);
+    }
 
     // Embed XML into PDF and add PDF/A-3 metadata
     const facturxPdf = await embedFacturX(
