@@ -10,6 +10,7 @@
 
 // NPM
 import { create } from "xmlbuilder2";
+import type { XMLBuilder } from "xmlbuilder2/lib/interfaces";
 
 // PROJECT: FACTURX
 import type { InvoiceData, Party, InvoiceTotals } from "./schema.js";
@@ -48,7 +49,7 @@ function formatAmount(value: number): string {
  * Add party trade information (seller or buyer)
  */
 function addTradeParty(
-  parent: ReturnType<typeof create>,
+  parent: XMLBuilder,
   party: Party,
   elementName: string
 ): void {
