@@ -19,6 +19,13 @@ import _merge from "lodash.merge";
 import { transliterate } from "transliteration";
 import type PDFKit from "pdfkit";
 
+// PROJECT: LIB
+import { generateFacturXML, embedFacturX } from "./facturx/index.js";
+import type { FacturXOptions } from "./facturx/types.js";
+
+// Re-export Factur-X types for external use
+export * from "./facturx/types.js";
+
 // Get __dirname equivalent for ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -122,7 +129,10 @@ interface MicroinvoiceOptions {
       currency?: string;
     };
   };
-};
+
+  /** Factur-X EN16931 configuration for e-invoicing compliance */
+  facturx?: FacturXOptions;
+}
 
 interface MicroinvoiceStorage {
   header: {
@@ -273,7 +283,7 @@ export default class Microinvoice {
   }
 
   /**
-   * Generates a PDF invoide
+   * Generates a PDF invoice
    *
    * @public
    * @param  {string|object} output
@@ -281,11 +291,11 @@ export default class Microinvoice {
    */
   generate(output: string | MicroinvoiceOutputOptions): Promise<void>;
   /**
-   * Generates a PDF invoide
+   * Generates a PDF invoice
    */
   generate(output?: undefined): PDFKit.PDFDocument;
   /**
-   * Generates a PDF invoide
+   * Generates a PDF invoice
    */
   generate(output?: MicroinvoiceOutput): Promise<void> | PDFKit.PDFDocument {
     this.document = new PDFDocument({
@@ -299,6 +309,18 @@ export default class Microinvoice {
     this.generateParts();
     this.generateLegal();
 
+    // Handle Factur-X enabled output (always async, requires file path)
+    if (this.options.facturx?.enabled) {
+      if (typeof output !== "string" && output?.type !== "file") {
+        throw new Error("Factur-X generation requires a file output path");
+      }
+
+      const filePath = (typeof output === "string") ? output : output.path;
+
+      return this.generateFacturXPDF(filePath);
+    }
+
+    // Standard PDF output
     if (typeof output === "string" || (output?.type === "file")) {
       const filePath = (typeof output === "string") ? output : output.path;
       const _stream = fs.createWriteStream(filePath);
@@ -307,6 +329,7 @@ export default class Microinvoice {
       this.document.end();
     } else {
       this.document.end();
+
       return this.document;
     }
 
@@ -318,6 +341,68 @@ export default class Microinvoice {
       this.document.on("error", () => {
         return reject();
       });
+    });
+  }
+
+  /**
+   * Generates a Factur-X compliant PDF with embedded XML
+   */
+  private async generateFacturXPDF(filePath: string): Promise<void> {
+    // Generate PDF to buffer first
+    const pdfBuffer = await this.generateToBuffer();
+
+    // Generate CII XML from Factur-X options
+    const xmlContent = generateFacturXML(this.options.facturx!);
+
+    // Embed XML into PDF and add PDF/A-3 metadata
+    const facturxPdf = await embedFacturX(
+      pdfBuffer,
+      xmlContent,
+      "EN16931",
+      this.options.data?.invoice?.name || "Invoice"
+    );
+
+    // Write the final Factur-X PDF to disk
+    fs.writeFileSync(filePath, facturxPdf);
+  }
+
+  /**
+   * Generates PDF to a Uint8Array (used for Factur-X processing)
+   */
+  private generateToBuffer(): Promise<Uint8Array> {
+    return new Promise((resolve, reject) => {
+      const chunks: Uint8Array[] = [];
+
+      this.document.on("data", (chunk: Uint8Array) => {
+        chunks.push(chunk);
+      });
+
+      this.document.on("end", () => {
+        // Calculate total length
+        let totalLength = 0;
+
+        for (const chunk of chunks) {
+          totalLength += chunk.length;
+        }
+
+        // Concatenate all chunks
+        const result = new Uint8Array(totalLength);
+
+        let offset = 0;
+
+        for (const chunk of chunks) {
+          result.set(chunk, offset);
+          offset += chunk.length;
+        }
+
+        resolve(result);
+      });
+
+      this.document.on("error", (error: Error) => {
+        reject(error);
+      });
+
+      this.document.end();
     });
   }
 

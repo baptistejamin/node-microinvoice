@@ -38,18 +38,20 @@
   ],
   "dependencies": {
     "lodash.merge": "4.6.2",
+    "pdf-lib": "^1.17.1",
     "pdfkit": "0.12.3",
-    "transliteration": "2.2.0"
+    "transliteration": "2.2.0",
+    "xmlbuilder2": "^4.0.3"
   },
   "devDependencies": {
     "@types/lodash.merge": "^4.6.7",
     "@types/node": "20.10.0",
     "@types/pdfkit": "0.12.12",
     "@typescript-eslint/eslint-plugin": "8.39.1",
-    "typescript": "5.9.3",
     "eslint": "9.29.0",
     "eslint-plugin-crisp": "1.1.13",
     "eslint-plugin-jsdoc": "54.1.0",
-    "tsx": "^4.19.2"
+    "tsx": "^4.19.2",
+    "typescript": "5.9.3"
   }
 }
