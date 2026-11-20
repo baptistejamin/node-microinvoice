@@ -303,22 +303,35 @@ export default class Microinvoice {
       const filePath = (typeof output === "string") ? output : output.path;
       const _stream = fs.createWriteStream(filePath);
 
+      const _promise = new Promise<void>((resolve, reject) => {
+        // Notice: resolve on the write stream 'close' event, not on the \
+        //   document 'end' event. The document only signals that all data \
+        //   has been handed over to the pipe, while the write stream \
+        //   signals that all data has been flushed to disk and that the \
+        //   file descriptor has been closed. Resolving any earlier lets \
+        //   callers read a truncated file.
+        _stream.on("close", () => {
+          return resolve(void 0);
+        });
+
+        _stream.on("error", (error) => {
+          return reject(error);
+        });
+
+        this.document.on("error", (error: Error) => {
+          return reject(error);
+        });
+      });
+
       this.document.pipe(_stream);
       this.document.end();
-    } else {
-      this.document.end();
-      return this.document;
+
+      return _promise;
     }
 
-    return new Promise((resolve, reject) => {
-      this.document.on("end", () => {
-        return resolve(void 0);
-      });
+    this.document.end();
 
-      this.document.on("error", () => {
-        return reject();
-      });
-    });
+    return this.document;
   }
 
   /**
